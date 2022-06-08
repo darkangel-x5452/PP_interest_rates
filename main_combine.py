@@ -14,15 +14,15 @@ from scipy.interpolate import interp1d, Rbf
 def got_cba_svr():
     # 1 = {str} 'Existing loans (%pa)'
     # 2 = {str} 'New loans (%pa)'
-    cba_svr_old = pd.read_parquet('./data/StandardVariableRateHistoricalRates(2008-2014).parquet')
+    cba_svr_old = pd.read_parquet('data/raw/StandardVariableRateHistoricalRates(2008-2014).parquet')
 
     # 1 = {str} 'Owner occupied (principal and interest)(%pa)'
     # 2 = {str} 'Owner occupied (interest only)(%pa)'
     # 3 = {str} 'Investment (principal and interest)(%pa)'
     # 4 = {str} 'Investment (interest only)(%pa)'
-    cba_svr_new = pd.read_parquet('./data/StandardVariableRateHistoricalRates-2015onwards.parquet')
+    cba_svr_new = pd.read_parquet('data/raw/StandardVariableRateHistoricalRates-2015onwards.parquet')
     cba_svr_old = cba_svr_old.rename(columns={'Existing loans (%pa)': 'Owner occupied (principal and interest)(%pa)'})
-    cba_svr_curr = pd.read_parquet('./data/OwnerOccupierhomeloaninterestrates_clean.parquet')
+    cba_svr_curr = pd.read_parquet('data/raw/OwnerOccupierhomeloaninterestrates_clean.parquet')
     # 06 = {str} 'clean_Principal & Interest rate_real'
     # 07 = {str} 'clean_Principal & Interest rate_comparison'
     # 08 = {str} 'clean_Principal & Interest Package rate**_real'
@@ -54,7 +54,7 @@ def got_cba_svr():
 
 
 def get_rba_rate():
-    rba_rate = pd.read_parquet('./data/rba_cash_rate_target.parquet')
+    rba_rate = pd.read_parquet('data/raw/rba_cash_rate_target.parquet')
     rba_rate['Effective Date'] = pd.to_datetime(rba_rate['Effective Date'], format='%d %b %Y', errors='coerce')
     rba_rate['Cash rate target %'] = pd.to_numeric(rba_rate['Cash rate target %'], errors='coerce')
     rba_rate = rba_rate.dropna(subset=['Cash rate target %', 'Effective Date'])
@@ -125,30 +125,31 @@ def get_combine_df(got_rba_rate, rates_list):
     result_pd.to_csv('./data/result.csv')
     result_pd.to_parquet('./data/result.parquet')
     result_pd = result_pd  # .set_index(date_col, drop=True)
+    use_lines = True
+    if use_lines:
+        result_pd = result_pd.set_index(date_col, drop=True)
+        lines = result_pd.interpolate(method='linear').plot.line()
+    else:
+        fig, ax = plt.subplots()
+        ax.set_title('Simple cursor')
+        x = result_pd[date_col]
+        # print(result_pd.columns)
+        data_cols = [
+            'Cash rate target %',
+            'Owner occupied (principal and interest)(%pa)',
+            'ehl70_pi',
+            '1 Year Fixed (%pa)',
+            '2 Year Fixed (%pa)',
+            '3 Year Fixed (%pa)',
+            '4 Year Fixed (%pa)',
+            '5 Year Fixed (%pa)'
+        ]
+        for _i in data_cols:
+            y = result_pd[_i]
+            ax.scatter(x, y)#,linestyle='solid')
 
-    # result_pd = result_pd.set_index(date_col, drop=True)
-    # lines = result_pd.interpolate(method='linear').plot.line()
-
-    fig, ax = plt.subplots()
-    ax.set_title('Simple cursor')
-    x = result_pd[date_col]
-    # print(result_pd.columns)
-    data_cols = [
-        'Cash rate target %',
-        'Owner occupied (principal and interest)(%pa)',
-        'ehl70_pi',
-        '1 Year Fixed (%pa)',
-        '2 Year Fixed (%pa)',
-        '3 Year Fixed (%pa)',
-        '4 Year Fixed (%pa)',
-        '5 Year Fixed (%pa)'
-    ]
-    for _i in data_cols:
-        y = result_pd[_i]
-        ax.scatter(x, y)#,linestyle='solid')
-
-    cursor = Cursor(ax)
-    fig.canvas.mpl_connect('motion_notify_event', cursor.on_mouse_move)
+        cursor = Cursor(ax)
+        fig.canvas.mpl_connect('motion_notify_event', cursor.on_mouse_move)
 
     plt.show()
 
@@ -162,8 +163,8 @@ def got_cba_ehl70():
     # 2 = {str} 'Owner occupied (interest only)(%pa)'
     # 3 = {str} 'Investment (principal and interest)(%pa)'
     # 4 = {str} 'Investment (interest only)(%pa)'
-    cba_svr_old = pd.read_parquet('./data/ExtraHomeLoanHistoricalRates(2015onwards)_ExtraHomeLoan≤70_LVR.parquet')
-    cba_svr_curr = pd.read_parquet('./data/OwnerOccupierhomeloaninterestrates_clean.parquet')
+    cba_svr_old = pd.read_parquet('data/raw/ExtraHomeLoanHistoricalRates(2015onwards)_ExtraHomeLoan≤70_LVR.parquet')
+    cba_svr_curr = pd.read_parquet('data/raw/OwnerOccupierhomeloaninterestrates_clean.parquet')
     # 06 = {str} 'clean_Principal & Interest rate_real'
     # 07 = {str} 'clean_Principal & Interest rate_comparison'
     # 08 = {str} 'clean_Principal & Interest Package rate**_real'
@@ -200,7 +201,7 @@ def got_cba_fr():
     # 3 = {str} '3 Year Fixed (%pa)'
     # 4 = {str} '4 Year Fixed (%pa)'
     # 5 = {str} '5 Year Fixed (%pa)'
-    cba_svr_old = pd.read_parquet('./data/FixedRateHistoricalRates(2008-2014).parquet')
+    cba_svr_old = pd.read_parquet('data/raw/FixedRateHistoricalRates(2008-2014).parquet')
     cba_svr_old = cba_svr_old.rename(columns={'1 Year Fixed (%pa)': '1 Year Fixed (%pa)', '5 Year Fixed (%pa)': '5 Year Fixed (%pa)'})
 
     # 0 = {str} 'Date from'
@@ -209,10 +210,10 @@ def got_cba_fr():
     # 3 = {str} '3 Year Fixed (%pa)'
     # 4 = {str} '4 Year Fixed (%pa)'
     # 5 = {str} '5 Year Fixed (%pa)'
-    cba_svr_new = pd.read_parquet('./data/FixedRateHistoricalRates-2015onwards_Owneroccupied-PrincipalandInterest.parquet')
+    cba_svr_new = pd.read_parquet('data/raw/FixedRateHistoricalRates-2015onwards_Owneroccupied-PrincipalandInterest.parquet')
     # cba_svr_old = cba_svr_old.rename(columns={'Existing loans (%pa)':'Owner occupied (principal and interest)(%pa)'})
 
-    cba_svr_curr = pd.read_parquet('./data/OwnerOccupierhomeloaninterestrates_clean.parquet')
+    cba_svr_curr = pd.read_parquet('data/raw/OwnerOccupierhomeloaninterestrates_clean.parquet')
     replace_rows = {
         '1 Year Fixed Rate': '1 Year Fixed (%pa)',
         '2 Year Fixed Rate': '2 Year Fixed (%pa)',
