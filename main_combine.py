@@ -242,6 +242,19 @@ def got_cba_fr():
     return combined_pd
 
 
+def get_inflation():
+    inflation_pd = pd.read_parquet('./data/refined/TABLES 1 and 2. CPI All Groups, Index Numbers and Percentage Changes_640101.parquet')
+    return inflation_pd
+
+def get_unemployment():
+    unemployment_pd = pd.read_parquet('./data/refined/employment_data_6202001.parquet')
+    return unemployment_pd
+
+def get_confidence():
+    unemployment_pd = pd.read_parquet('./data/refined/consumer_confidence.parquet')
+    return unemployment_pd
+
+
 if __name__ == '__main__':
     get_cba_svr = got_cba_svr()
     # ExtraHomeLoanHistoricalRates(2015onwards)_ExtraHomeLoan≤70_LVR
@@ -249,11 +262,17 @@ if __name__ == '__main__':
     # FixedRateHistoricalRates(2008-2014).parquet
     get_cba_fr = got_cba_fr()
     got_rba_rate = get_rba_rate()
+    got_inflation = get_inflation()
+    got_confidence = get_confidence()
+    got_unemployment = get_unemployment()
     get_combine_df(
         got_rba_rate,
         [
             get_cba_svr,
-            get_cba_ehl70,
-            get_cba_fr
+            # get_cba_ehl70,
+            # get_cba_fr,
+            got_inflation,
+            got_unemployment,
+            got_confidence
         ]
     )
