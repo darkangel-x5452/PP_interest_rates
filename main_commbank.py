@@ -38,10 +38,8 @@ def clean_current():
         'Investmenthomeloaninterestrates.parquet'
     ]
 
-
-
     for _file in curr_files:
-        data_raw = pd.read_parquet(f'./data/{_file}')
+        data_raw = pd.read_parquet(f'./data/raw/{_file}')
 
         col_data = [
             'Principal & Interest rate',
@@ -65,7 +63,7 @@ def clean_current():
 
                 data_raw = data_raw.replace({col_name: remap_none})
                 data_raw[col_name] = data_raw[col_name].str.rstrip('%').astype('float')
-        data_raw.to_parquet(f'./data/{"".join(_file.split(".")[:-1])}_clean.parquet')
+        data_raw.to_parquet(f'./data/raw/{"".join(_file.split(".")[:-1])}_clean.parquet')
         # 0 = {str} 'createTimeStamp'
         # 1 = {str} 'Loan type'
         # 2 = {str} 'Principal & Interest rate'
@@ -102,7 +100,7 @@ def scrape_current():
     results = []
     for _i in data_table:
         title = _i.find('div', {'class': 'heading-section'}).text.strip().replace(' ', '')
-        data_path = f'./data/{title}.parquet'
+        data_path = f'./data/raw/{title}.parquet'
         data_final = pd.read_parquet(data_path)
         headers = _i.find('div', {'class': 'complex-table-row header'}).findAll('div', {'class': 'complex-cell'})
         col_names = []
@@ -118,8 +116,8 @@ def scrape_current():
                 row_dict[key] = val.strip()
             results.append(row_dict)
         data_pd = pd.DataFrame(results)
-        data_final = pd.concat([data_final, data_pd], ignore_index=True)
-        data_final.to_parquet(f'./data/{title}.parquet')
+        data_final = pd.concat([data_pd, data_final], ignore_index=True)
+        data_final.to_parquet(f'./data/raw/{title}.parquet')
 
         #
     print('bye')
@@ -148,5 +146,5 @@ if __name__ == '__main__':
         'https://www.commbroker.com.au/Net/Documentum/interest-rates-fees/historical-interest-rates/historical-extra-home.aspx',
     ]
     # hello(urls)
-    # scrape_current()
+    scrape_current()
     clean_current()

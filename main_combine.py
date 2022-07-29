@@ -188,6 +188,8 @@ def got_cba_ehl70():
     cba_svr_curr = cba_svr_curr[list(rename_cols.values())]
     cba_svr_old['Date from'] = pd.to_datetime(cba_svr_old['Date from'], dayfirst=True)  # , errors='coerce')
     combined_pd = pd.concat([cba_svr_old, cba_svr_curr])
+
+
     combined_pd = combined_pd.sort_values('Date from')
     combined_pd = combined_pd.rename(columns={'Owner occupied (principal and interest)(%pa)': 'ehl70_pi'})
     print('bye')
@@ -269,7 +271,7 @@ if __name__ == '__main__':
         got_rba_rate,
         [
             get_cba_svr,
-            # get_cba_ehl70,
+            get_cba_ehl70,
             # get_cba_fr,
             got_inflation,
             got_unemployment,
