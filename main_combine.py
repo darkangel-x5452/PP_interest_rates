@@ -272,7 +272,7 @@ if __name__ == '__main__':
         [
             get_cba_svr,
             get_cba_ehl70,
-            # get_cba_fr,
+            get_cba_fr,
             got_inflation,
             got_unemployment,
             got_confidence
