@@ -7,3 +7,4 @@ matplotlib
 mplcursors
 scipy
 openpyxl
+plotly
