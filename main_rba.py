@@ -10,7 +10,7 @@ def hello(url):
     html = requests.get(url).content
     soup = bs4.BeautifulSoup(html, features="lxml")
     df_list = pd.read_html(html)
-    df_list[0].to_parquet('./data/rba_cash_rate_target.parquet')
+    df_list[0].to_parquet('./data/rba_cash_rate_target.parquet', use_dictionary=False)
 
     print('bye')
 

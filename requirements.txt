@@ -8,3 +8,4 @@ mplcursors
 scipy
 openpyxl
 plotly
+scikit-learn

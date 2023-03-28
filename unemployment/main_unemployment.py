@@ -15,7 +15,7 @@ def hello():
     data_pd['Unemployment rate ;  Persons ;.1'] = data_pd['Unemployment rate ;  Persons ;.1'].astype(float)
     data_pd['Unnamed: 0'] = pd.to_datetime(data_pd['Unnamed: 0'])
     data_pd = data_pd.rename(columns={'Unnamed: 0': 'Date from'})
-    data_pd.to_parquet(f'../data/refined/{filename}.parquet')
+    data_pd.to_parquet(f'../data/refined/{filename}.parquet', use_dictionary=False)
     # data_pd = data_pd.set_index('Unnamed: 0', drop=True)
     # data_pd.plot()
     # plt.show()

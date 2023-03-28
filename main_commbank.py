@@ -21,13 +21,13 @@ def hello(url):
 
         title = re.sub('\s', '', title)
         if len(titles_3) == 0:
-            df_list[0].to_parquet(f'./data/{title}.parquet')
+            df_list[0].to_parquet(f'./data/{title}.parquet', use_dictionary=False)
         else:
             for _idx, _i in enumerate(titles_3):
                 df = df_list[_idx]
                 title_3 = re.sub('[%><]', '_', _i)
                 title_3 = re.sub('\s', '', title_3)
-                df.to_parquet(f'./data/{title}_{title_3}.parquet')
+                df.to_parquet(f'./data/{title}_{title_3}.parquet', use_dictionary=False)
 
     print('bye')
 
@@ -49,7 +49,7 @@ def clean_current():
         ]
         remap_none = {'n/a': None, '':None}
         for _col in col_data:
-            data_raw[[f'clean_{_col}_real', f'clean_{_col}_comparison']] = data_raw[_col].str.split('p.a', 1, expand=True)
+            data_raw[[f'clean_{_col}_real', f'clean_{_col}_comparison']] = data_raw[_col].str.split('p.a', n=1, expand=True)
             two_vals = ['real','comparison']
 
             for _val in two_vals:
@@ -63,7 +63,7 @@ def clean_current():
 
                 data_raw = data_raw.replace({col_name: remap_none})
                 data_raw[col_name] = data_raw[col_name].str.rstrip('%').astype('float')
-        data_raw.to_parquet(f'./data/raw/{"".join(_file.split(".")[:-1])}_clean.parquet')
+        data_raw.to_parquet(f'./data/raw/{"".join(_file.split(".")[:-1])}_clean.parquet', use_dictionary=False)
         # 0 = {str} 'createTimeStamp'
         # 1 = {str} 'Loan type'
         # 2 = {str} 'Principal & Interest rate'
@@ -117,7 +117,7 @@ def scrape_current():
             results.append(row_dict)
         data_pd = pd.DataFrame(results)
         data_final = pd.concat([data_pd, data_final], ignore_index=True)
-        data_final.to_parquet(f'./data/raw/{title}.parquet')
+        data_final.to_parquet(f'./data/raw/{title}.parquet', use_dictionary=False)
 
         #
     print('bye')

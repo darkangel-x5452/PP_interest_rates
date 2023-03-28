@@ -32,7 +32,7 @@ def hello():
     master_pd[col_interest] = master_pd[col_interest]/5
     master_pd[date_col] = pd.to_datetime(master_pd[date_col])
 
-    master_pd.to_parquet(f'../data/refined/{filename}.parquet')
+    master_pd.to_parquet(f'../data/refined/{filename}.parquet', use_dictionary=False)
     #
     # master_pd = master_pd.set_index(date_col, drop=True)
     # master_pd.plot()
