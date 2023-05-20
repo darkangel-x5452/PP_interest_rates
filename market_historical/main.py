@@ -9,11 +9,11 @@ if __name__ == '__main__':
     # hc.get_usa_fund_rate()
     # hc.get_usa_core_inflation()
     # hc.get_usa_nyse()
-    hc.get_usa_nasdaq()
+    # hc.get_usa_nasdaq()
+    hc.getusa_cpi()
 
     # ANALYSE DATA
     hac = HistoricalAnalyseClass()
-
     hac.combine_data()
 
     hac.analyse_data()

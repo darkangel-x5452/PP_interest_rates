@@ -55,3 +55,27 @@ class HistoricalGetClass():
         file_fp = f"{self.raw_fp}/{file_name}.csv"
         data_pd = csv_data_cln(file_fp=file_fp, date_col="Date", prefix={"nasdaq": keep_cols})
         data_pd.to_parquet(f"{self.cln_fp}/{file_name}.parquet", use_dictionary=False)
+
+    def getusa_cpi(self):
+        file_name = "usa_cpi_non-season_CPIAUCNS"
+        # key_name = "unemployment"
+        keep_cols = ["CPIAUCNS"]
+        file_fp = f"{self.raw_fp}/{file_name}.csv"
+        data_pd = csv_data_cln(file_fp=file_fp, date_col="DATE", prefix={"cpi": keep_cols})
+
+        most_recent_date = data_pd['c_datetime'].max()
+        most_recent_date = most_recent_date + pd.offsets.MonthBegin(1)
+
+        # Generate 5 new dates
+        new_dates = pd.date_range(start=most_recent_date, periods=24, freq='MS')
+
+        # Create a DataFrame with the new dates
+        new_rows = pd.DataFrame({'c_datetime': new_dates})
+
+        # Append the new rows to the existing DataFrame
+        data_pd = data_pd.append(new_rows, ignore_index=True)
+        data_pd = data_pd.sort_values("c_datetime")
+
+
+        data_pd['cpi_CPIAUCNS_former'] = data_pd['cpi_CPIAUCNS'].shift(12)
+        data_pd.to_parquet(f"{self.cln_fp}/{file_name}.parquet", use_dictionary=False)
